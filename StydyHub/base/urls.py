@@ -20,6 +20,8 @@ urlpatterns = [
     
     path('browse-topics' , views.topicsPage , name='browse-topics'),
     path('recent-activity' , views.activityPage , name='recent-activity'),
-
+    
+    path('follow-unfollow/<str:pk>' , views.follow_unfollow , name='follow-unfollow'),
+    path('subscribe-topic/<str:pk>' , views.subscribeTopic , name='subscribe-topic'),
 
 ] 

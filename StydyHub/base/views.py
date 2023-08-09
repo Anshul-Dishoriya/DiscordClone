@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 
 from django.db.models import Q
-from base.models import Room , Topic , Message
+from base.models import Room , Topic , Message , UserFollowers , UserFollowing
 from base.forms import RoomForm , UserForm
 
 
@@ -90,6 +90,7 @@ def home(request):
 
 def room(request ,pk):# here pk = primary key to identify the room
     room = Room.objects.get(id = pk)
+    print("\n\n\n" , room.host , end="\n\n\n")
     room_messages = room.message_set.all().order_by('-created') # message_set will give us all children of the room
     participants = room.participants.all()
 
@@ -106,10 +107,30 @@ def room(request ,pk):# here pk = primary key to identify the room
         'room_messages':room_messages ,'participants':participants}
     return render(request ,'base/room.html' ,context)
 
+
+def subscribeTopic(request , pk):
+    topic = Topic.objects.get(id=pk)
+    # user = topic.subscribe.get(id=request.user.id)
+    # user.delete()
+    print(topic)
+    # try :
+    #     pass
+    #     # Topic.subscribe.get(user)
+    # except :
+    #     pass
+    #     # Topic.subscribe.add(user)
+    # # print(dict(request.META))
+    return redirect('home')
+
+
 def userProfile(request , pk):# here pk = primary key to identify the user
     user = User.objects.get(id=pk)
     rooms = user.room_set.all()
+    user_followers = UserFollowers.objects.filter(myFollower=user)
+    user_followings = UserFollowing.objects.filter(myFollowing=user)
 
+    is_following = True if UserFollowing.objects.filter(myFollowing=request.user , following=user) else False
+    
     # to display the recent activity
     room_messages = user.message_set.all()
     
@@ -118,7 +139,9 @@ def userProfile(request , pk):# here pk = primary key to identify the user
 
 
     context = {'user':user , 'rooms':rooms ,
-        'room_messages':room_messages , 'topics':topics}
+        'room_messages':room_messages , 'topics':topics,
+        'user_followers':user_followers , 'user_followings':user_followings,
+        'is_following' :is_following }
     return render(request , 'base/profile.html' ,context)
 
 @login_required(login_url='login')
@@ -214,20 +237,30 @@ def updateUser(request):
     return render(request , 'base/update_user.html',context)
 
 
-def topics(request):
-    return render(request , 'base/topics.html')
-
-
-
 def topicsPage(request):
     q = request.GET.get('q') 
     if q is None:
         q = ''
 
-    topics = Topic.objects.filter(name__icontains=q)[:5]
+    topics = Topic.objects.filter(name__icontains=q)
     return render(request , 'base/topics_page.html' ,{'topics':topics})
 
 
 def activityPage(request):
     room_messages = Message.objects.all()
     return render(request , 'base/activity_page.html' , {'room_messages':room_messages})
+
+
+def follow_unfollow(request , pk):
+    user = User.objects.get(id=pk)
+    following = UserFollowing.objects.filter(myFollowing=request.user , following=user)
+    
+    if following.count() :
+        following.delete()
+        UserFollowers.objects.filter(myFollower=user , follower=request.user).delete()
+    else:
+        UserFollowing.objects.create(myFollowing=request.user , following=user).save()
+        UserFollowers.objects.create(myFollower=user , follower=request.user).save()
+
+    return redirect('user-profile' , pk=user.id)
+

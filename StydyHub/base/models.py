@@ -3,9 +3,34 @@ from django.contrib.auth.models import User
 
 
 # Create your models here.
+class UserFollowers(models.Model):
+    myFollower = models.ForeignKey(User , on_delete=models.CASCADE , related_name='myFollower')
+    follower = models.ForeignKey(User , on_delete=models.CASCADE , related_name='follower')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['myFollower' , 'follower'] , name='unique_followers_constraint')
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.myFollower.username} is followed by {self.follower.username}"
+
+class UserFollowing(models.Model):
+    myFollowing = models.ForeignKey(User , on_delete=models.CASCADE ,related_name='myFollowing')
+    following = models.ForeignKey(User , on_delete=models.CASCADE , related_name='following')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['myFollowing' , 'following'] , name='unique_following_constraint')
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.myFollowing.username} is Following {self.following.username}"
+
 
 class Topic(models.Model):
     name = models.CharField(max_length=100)
+    subscribe  = models.ManyToManyField(User, related_name='subscribe', blank=True)
     
     def __str__(self):
         return self.name

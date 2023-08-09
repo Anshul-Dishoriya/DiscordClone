@@ -1163,3 +1163,18 @@ a {
   color: var(--color-main);
   font-weight: 1.4rem;
 }
+
+
+.narrow-link {
+  display: inline-block;
+  padding: 5px; /* Add padding to create a clickable area */
+  border: 1px solid #ccc; /* Add a border to visually identify the clickable area */
+}
+
+.link-text {
+  display: inline-block;
+  /* Set a specific width for the clickable area */
+  width: 50px; /* Adjust this value as needed */
+  overflow: hidden; /* Hide any overflow */
+  white-space: nowrap; /* Prevent text from wrapping */
+}

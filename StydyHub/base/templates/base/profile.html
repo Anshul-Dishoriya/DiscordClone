@@ -18,8 +18,19 @@
                 <div class="profile__info">
                     <h3>{{user.first_name}} {{user.last_name}}</h3>
                     <p>@{{user.username}}</p>
+                    <h4>Followers : {{user_followers.count}}      Following : {{user_followings.count}}</h4>
                     {% if user == request.user %}
                         <a href="{% url 'update-user' %}" class="btn btn--main btn--pill">Edit Profile</a>
+                    {% endif %}
+
+                    {% if request.user != user %}
+                    <a href="{% url 'follow-unfollow' user.id %}" class="btn btn--main btn--pill">
+                        {% if is_following %}
+                            Unfollow
+                        {% else %}
+                            Follow
+                        {% endif %}
+                    </a>
                     {% endif %}
                 </div>
                 <div class="profile__about">

@@ -6,15 +6,18 @@
     <h2>Browse Topics</h2>
   </div>
   <ul class="topics__list">
-    <li>
+    <li class="flex">
       <a href="{% url 'home' %}" class="active">All <span>{{topics.count}}</span></a>
     </li>
-
-
+    
     {% for topic in topics %}
-    <li>
-      <a href="{% url 'home' %}?q={{topic.name}}">{{topic.name}} <span>{{topic.room_set.all.count}}</span></a>
-    </li>
+      {% comment %} <li>
+        <a href="{% url 'home' %}?q={{topic.name}}">{{topic.name}} <span>{{topic.room_set.all.count}}</span></a>
+      </li> {% endcomment %}
+      <li style="display: flex; justify-content: space-between; align-items: center;">
+        <a href="{% url 'home' %}?q={{topic.name}}" style="text-decoration: none;">{{topic.name}} {{topic.room_set.all.count}}</a>
+        <a  href="{% url 'subscribe-topic' topic.id %}" style="text-decoration: none;"><span>Subscribe</span></a>
+      </li>
     {% endfor %}
 
   </ul>

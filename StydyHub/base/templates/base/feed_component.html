@@ -6,10 +6,11 @@
       <div class="avatar avatar--small">
         <img src="https://randomuser.me/api/portraits/women/11.jpg" />
       </div>
-      <span>@{{room.host.username}}</span>
+      <span>Host @{{room.host.username}}</span>
     </a>
     <div class="roomListRoom__actions">
       <span>{{room.created|timesince}} ago</span>
+      {% comment %} <a href="{% url 'follow-unfollow' user.id %}" class="btn btn--main btn--pill">Follow </a> {% endcomment %}
     </div>
   </div>
   <div class="roomListRoom__content">

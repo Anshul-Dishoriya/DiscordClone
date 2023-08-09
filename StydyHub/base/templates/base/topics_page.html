@@ -30,17 +30,21 @@
               </label>
             </form>
 
-            <ul class="topics__list">
-              <li>
-                <a href="{% url 'browse-topics' %}" class="active">All <span>{{topics.count}}</span></a>
-              </li>
-
-              {% for topic in topics  %}
+            <ul class="topics__list" >
+              <div class="participants">
+                <div class="participants__list scroll" style="height:400px">
                 <li>
-                  <a href="{% url 'home' %}?q={{topic.name}}">{{topic.name}} <span>{{topic.room_set.count}}</span></a>
+                  <a class="flex"  href="{% url 'browse-topics' %}" class="active"> All <span>{{topics.count}}</span> </a>
                 </li>
+
+                {% for topic in topics  %}
+                  <li>
+                    <a class="flex" href="{% url 'home' %}?q={{topic.name}}">{{topic.name}} <span>{{topic.room_set.count}}</span></a> 
+                  </li>
                 {% endfor %}
-            
+                <br>
+                </div>
+              </div>
             </ul>
           </div>
         </div>
