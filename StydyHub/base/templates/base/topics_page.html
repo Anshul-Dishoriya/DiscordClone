@@ -36,11 +36,29 @@
                 <li>
                   <a class="flex"  href="{% url 'browse-topics' %}" class="active"> All <span>{{topics.count}}</span> </a>
                 </li>
-
-                {% for topic in topics  %}
-                  <li>
-                    <a class="flex" href="{% url 'home' %}?q={{topic.name}}">{{topic.name}} <span>{{topic.room_set.count}}</span></a> 
+                
+                {% for topic_id , topic_data in topics.items  %}
+                  <li style="display: flex; justify-content: space-between; align-items: center;">
+                    <a  href="{% url 'home' %}?q={{topic_data.name}}">{{topic_data.name}} ({{topic_data.name.room_set.count}} Rooms) </a> 
+                    <a  href="{% url 'subscribe-topic' topic_id %}" style="text-decoration: none;">
+                      <span>
+                        {% if topic_data.is_subscribed %}
+                          Unsubscribe
+                        {% else %}
+                          Subscribe
+                        {% endif %} 
+                      </span></a>
                   </li>
+                  {% comment %} <li class="flex">
+                    <a class="flex" href="{% url 'home' %}?q={{topic_data.name}}">{{topic_data.name}} ({{topic_data.name.room_set.count}} Rooms) </a> 
+                    <span>
+                      {% if topic_data.is_subscribed %}
+                        Unsubscribe
+                      {% else %}
+                        Subscribe
+                      {% endif %} 
+                    </span>
+                  </li> {% endcomment %}
                 {% endfor %}
                 <br>
                 </div>

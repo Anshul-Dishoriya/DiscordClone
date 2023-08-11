@@ -63,18 +63,18 @@ def logoutUser(request):
     return redirect('home')
 
 def home(request):
-    q = request.GET.get('q') 
+    q = request.GET.get('q')
+
     if q is None:
         q = ''
+    
     rooms = Room.objects.filter(
-        Q(topic__name__icontains=q) |
-        Q(name__icontains=q) |
+        Q(topic__name__icontains=q)|
+        Q(name__icontains=q)|
         Q(description__icontains=q)
     )
-
-    topics = Topic.objects.all()[:5]
+    
     room_counts = rooms.count()
-
     #to display the recent activity
     room_messages = Message.objects.filter(room__name__icontains=q)
     context={'rooms':rooms , 'room_counts':room_counts , 'room_messages':room_messages}
@@ -128,13 +128,13 @@ def userProfile(request , pk):# here pk = primary key to identify the user
     room_messages = user.message_set.all()
     
     # to display the Topics
-    topics = Topic.objects.all()[:5]
 
 
-    context = {'user':user , 'rooms':rooms ,
-        'room_messages':room_messages , 'topics':topics,
-        'user_followers':user_followers , 'user_followings':user_followings,
-        'is_following' :is_following }
+    context = {'user':user , 'rooms':rooms ,'is_following' :is_following,
+        'room_messages':room_messages , 'user_followers':user_followers ,
+          'user_followings':user_followings }
+    
+    get_topics(request , context)
     return render(request , 'base/profile.html' ,context)
 
 @login_required(login_url='login')
@@ -233,7 +233,10 @@ def topicsPage(request):
         q = ''
 
     topics = Topic.objects.filter(name__icontains=q)
-    return render(request , 'base/topics_page.html' ,{'topics':topics})
+    context={}
+
+    get_topics(request , context , topics)
+    return render(request , 'base/topics_page.html' ,context)
 
 
 def activityPage(request):
