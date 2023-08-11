@@ -10,10 +10,6 @@ from base.models import Room , Topic , Message , UserFollowers , UserFollowing
 from base.forms import RoomForm , UserForm
 
 
-
-
-#  Create your views here.
-
 def registerUser(request):
     form = UserCreationForm()
 
@@ -69,12 +65,12 @@ def home(request):
     if q is None:
         q = ''
 
+
     rooms = Room.objects.filter(
         Q(topic__name__icontains=q) |
         Q(name__icontains=q) |
         Q(description__icontains=q)
-
-        )
+    )
 
     topics = Topic.objects.all()[:5]
     room_counts = rooms.count()
@@ -90,7 +86,6 @@ def home(request):
 
 def room(request ,pk):# here pk = primary key to identify the room
     room = Room.objects.get(id = pk)
-    print("\n\n\n" , room.host , end="\n\n\n")
     room_messages = room.message_set.all().order_by('-created') # message_set will give us all children of the room
     participants = room.participants.all()
 
@@ -103,23 +98,20 @@ def room(request ,pk):# here pk = primary key to identify the room
         room.participants.add(request.user)
         return redirect('room' , pk=room.id)
 
-    context = {'room' : room , 
-        'room_messages':room_messages ,'participants':participants}
+    context = {'room' : room, 'room_messages':room_messages ,
+                'participants':participants}
     return render(request ,'base/room.html' ,context)
 
 
 def subscribeTopic(request , pk):
     topic = Topic.objects.get(id=pk)
-    # user = topic.subscribe.get(id=request.user.id)
-    # user.delete()
-    print(topic)
-    # try :
-    #     pass
-    #     # Topic.subscribe.get(user)
-    # except :
-    #     pass
-    #     # Topic.subscribe.add(user)
-    # # print(dict(request.META))
+    is_subscribed = topic.subscribe.filter(id=request.user.id)
+
+    if is_subscribed:
+        topic.subscribe.remove(request.user.id)
+    else :
+        topic.subscribe.add(request.user.id)
+    # print(dict(request.META))
     return redirect('home')
 
 
@@ -135,7 +127,7 @@ def userProfile(request , pk):# here pk = primary key to identify the user
     room_messages = user.message_set.all()
     
     # to display the Topics
-    topics = Topic.objects.all()
+    topics = Topic.objects.all()[:5]
 
 
     context = {'user':user , 'rooms':rooms ,
@@ -228,9 +220,6 @@ def updateUser(request):
         form = UserForm(request.POST , instance=user)
         if form.is_valid():
             form.save()
-            # print()
-            # print(request.META.get("HTTP_REFERER"))
-            # print()
             return redirect('user-profile' , pk=user.id)
 
     context = {'form':form}
