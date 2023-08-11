@@ -9,6 +9,8 @@ from django.db.models import Q
 from base.models import Room , Topic , Message , UserFollowers , UserFollowing
 from base.forms import RoomForm , UserForm
 
+from .utils import get_topics
+
 
 def registerUser(request):
     form = UserCreationForm()
@@ -64,8 +66,6 @@ def home(request):
     q = request.GET.get('q') 
     if q is None:
         q = ''
-
-
     rooms = Room.objects.filter(
         Q(topic__name__icontains=q) |
         Q(name__icontains=q) |
@@ -77,9 +77,10 @@ def home(request):
 
     #to display the recent activity
     room_messages = Message.objects.filter(room__name__icontains=q)
-
-    context={'rooms':rooms , 'topics':topics , 
-             'room_counts':room_counts , 'room_messages':room_messages}
+    context={'rooms':rooms , 'room_counts':room_counts , 'room_messages':room_messages}
+    
+    # to add topics in context 
+    get_topics(request , context)
     return render(request, 'base/home.html' ,context )
 
 
