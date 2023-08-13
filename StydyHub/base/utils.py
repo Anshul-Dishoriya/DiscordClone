@@ -15,4 +15,12 @@ def get_topics(request , context ,topics=None):
 
 
 
-    
+
+def get_messages(request , context ,messages=None):
+    room_messages = {}
+    for msg in messages:
+        room_messages[msg.id] = {'data':msg , 'isLiked':False} 
+
+        if request.user.is_authenticated and msg.likes.filter(id=request.user.id):
+            room_messages[msg.id]['isLiked'] = True
+    context['room_messages']= room_messages

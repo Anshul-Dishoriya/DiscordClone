@@ -9,7 +9,7 @@ from django.db.models import Q
 from base.models import Room , Topic , Message , UserFollowers , UserFollowing
 from base.forms import RoomForm , UserForm
 
-from .utils import get_topics
+from .utils import get_topics ,get_messages
 
 
 def registerUser(request):
@@ -99,8 +99,9 @@ def room(request ,pk):# here pk = primary key to identify the room
         room.participants.add(request.user)
         return redirect('room' , pk=room.id)
 
-    context = {'room' : room, 'room_messages':room_messages ,
+    context = {'room' : room, 'room_messages':None ,
                 'participants':participants}
+    get_messages(request , context , room_messages)
     return render(request ,'base/room.html' ,context)
 
 
@@ -244,7 +245,7 @@ def activityPage(request):
     return render(request , 'base/activity_page.html' , {'room_messages':room_messages})
 
 
-def follow_unfollow(request , pk):
+def followUnfollow(request , pk):
     user = User.objects.get(id=pk)
     following = UserFollowing.objects.filter(myFollowing=request.user , following=user)
     
@@ -256,4 +257,16 @@ def follow_unfollow(request , pk):
         UserFollowers.objects.create(myFollower=user , follower=request.user).save()
 
     return redirect('user-profile' , pk=user.id)
+
+@login_required(login_url='login')
+def likeMessage(request , pk): # pk is message id
+    message = Message.objects.get(id=pk)
+    isLiked = message.likes.filter(id=request.user.id)
+
+    if isLiked:
+        message.likes.remove(request.user)
+    else :
+        message.likes.add(request.user)
+    
+    return redirect("home")
 

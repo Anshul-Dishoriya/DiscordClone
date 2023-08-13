@@ -122,39 +122,40 @@
             </div>
             
             {% endcomment %}
-            {% for message in room_messages %}
+            {% for message_id , message in room_messages.items %}
             <div class="thread">
               <div class="thread__top">
                 <div class="thread__author">
-                  <a href="{% url 'user-profile' message.user.id %}" class="thread__authorInfo">
+                  <a href="{% url 'user-profile' message_id %}" class="thread__authorInfo">
                     <div class="avatar avatar--small">
                       <img
-                        src="https://randomuser.me/api/portraits/men/{{message.user.id}}.jpg"
+                        src="https://randomuser.me/api/portraits/men/{{message.data.user.id}}.jpg"
                       />
                     </div>
-                    <span>@{{message.user.username}}</span>
+                    <span>@{{message.data.user.username}}</span>
                   </a>
-                  <span class="thread__date"> {{message.created|timesince}} ago</span>
+                  <span class="thread__date"> {{message.data.created|timesince}} ago</span>
                 </div>
-                {% if message.user == request.user  %}
-                    <div class="thread__delete">
-                    <a href="{% url 'delete-message' message.id %}">
-                        <svg 
-                        version="1.1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="32"
-                        height="32"
-                        viewBox="0 0 32 32"
-                        >
-                        
-                        <title>remove</title>
-                        <path
-                        d="M27.314 6.019l-1.333-1.333-9.98 9.981-9.981-9.981-1.333 1.333 9.981 9.981-9.981 9.98 1.333 1.333 9.981-9.98 9.98 9.98 1.333-1.333-9.98-9.98 9.98-9.981z"
-                        ></path>
+                <div class="thread__delete"> 
+                  <a href="{% url 'like-message' message_id %}">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" >
+                      <title>Like</title>
+                      {% if message.isLiked %}
+                        <path d="M12 21.35l-1.45-1.32C5.4 16.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C15.09 3.81 16.76 3 18.5 3 21.58 3 24 5.42 24 8.5c0 3.78-3.4 7.86-8.55 11.53L12 21.35z" fill="red" />
+                      {% else %}
+                        <path d="M12 21.35l-1.45-1.32C5.4 16.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C15.09 3.81 16.76 3 18.5 3 21.58 3 24 5.42 24 8.5c0 3.78-3.4 7.86-8.55 11.53L12 21.35z" />
+                      {% endif %}
                     </svg>
-                    </a>
+                  </a>
+                    {% if message.data.user == request.user  %}
+                      <a href="{% url 'delete-message' message_id %}">
+                          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" >
+                          <title>Remove</title>
+                          <path d="M27.314 6.019l-1.333-1.333-9.98 9.981-9.981-9.981-1.333 1.333 9.981 9.981-9.981 9.98 1.333 1.333 9.981-9.98 9.98 9.98 1.333-1.333-9.98-9.98 9.98-9.981z">
+                      </svg>
+                      </a>
+                      {% endif %}
                     </div>
-                {% endif %}
               </div>
               <div class="thread__details">
                 {{message.body}}

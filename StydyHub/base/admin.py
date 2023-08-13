@@ -1,6 +1,5 @@
 from django.contrib import admin
 from base.models import Room, Topic, Message , UserFollowing , UserFollowers
-
 # Register your models here.
 
 admin.site.register(Room)
