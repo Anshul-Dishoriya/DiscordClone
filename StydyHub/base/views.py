@@ -76,7 +76,7 @@ def home(request):
     
     room_counts = rooms.count()
     #to display the recent activity
-    room_messages = Message.objects.filter(room__name__icontains=q)
+    room_messages = Message.objects.filter(room__name__icontains=q)[:10]
     context={'rooms':rooms , 'room_counts':room_counts , 'room_messages':room_messages}
     
     # to add topics in context 
@@ -204,10 +204,8 @@ def deleteRoom(request , pk):# here pk = primary key to identify the room
 def deleteMessage(request , pk):# here pk = primary key to identify the message
     message = Message.objects.get(id=pk)
 
-    # condition to prevent that other user can not delete the other user's room
-    if request.user != message.user:
-        return HttpResponse('You are not allowed!!')
     
+
     if request.method == 'POST':
         message.delete()
         return redirect('home')
